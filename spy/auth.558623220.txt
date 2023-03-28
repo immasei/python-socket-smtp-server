@@ -1,0 +1,6 @@
+From: <sei@it.org>
+To: <sou@example.com>,<shin@carol.me>
+Date: Mon, 14 Sep 1987 23:07:00 +1000
+Subject: Bro
+Testing pls:3. jhg.jhg.
+Ahhi.
