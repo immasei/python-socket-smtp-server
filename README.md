@@ -142,9 +142,10 @@ The meaningful states in this assignment can be found in later section.
 
 ```default
 Your Personal ID is:
-ABCDEF
+10E5F3
+
 Your Personal Secret is:
-................................
+ef8c34a62a9af5abfec5fae03c02a347
 ```
 
 The `AUTH` command will need them as the user name and the shared secret.
