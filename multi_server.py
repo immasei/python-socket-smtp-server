@@ -1,3 +1,4 @@
+#SERVER HANDLE MULTIPLE CONNECTIONS
 from a import config_check
 from a import process_email_content
 from a import validate_ip
