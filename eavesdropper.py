@@ -1,3 +1,4 @@
+#MIT: ATTACKER
 from a import config_check
 from a import process_email_content
 import os
