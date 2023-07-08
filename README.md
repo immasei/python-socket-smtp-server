@@ -1,12 +1,8 @@
 # Postman Impersonation
 
-This assignment is worth **20%** of your overall grade for the course.
+Implementing in Python some email exchange applications that supports the `SMTP-CRAM` protocol. This includes a client, a server and an eavesdropper (middle-man attacker), which can apply MitM attack to the authentication mechanism. Unix tools like `netcat` and `telnet` can help test your program.
 
-**Due: Week 13, Thursday, November 3rd at 23:59:00, Sydney local time.**
-
-You will implement in Python some email exchange applications that supports the `SMTP-CRAM` protocol. This includes a client, a server and an eavesdropper (middle-man attacker), which can apply MitM attack to the authentication mechanism. Unix tools like `netcat` and `telnet` can help test your program.
-
-To limit the workload, we provide a simplification on the original `SMTP` and `SMTP-CRAM` protocols. We assume all programs are supposed to be run and tested locally and they are not required to be extensible to support TCP connection via the Internet or to be used in real world. No actual data should be sent and received from the Internet, and everything should be contained in the local loopback.
+No actual data should be sent and received from the Internet, and everything should be contained in the local loopback.
 We also assume any syntactically valid message under the protocol can be accepted. E.g., No actual check is needed on any email or IP address, we accept any syntactically valid messages including addresses.
 
 The communication between the email exchange applications has to follow a popular protocol for email exchanging, the Simple Mail Transfer Protocol (`SMTP`) protocol with one authentication extension (`CRAM-MD5`), the SMTP Service Extension for Authentication by Challenge-Response Authentication Mechanism. The authentication type associated is called `CRAM-MD5` and the full protocol is named `SMTP-CRAM`.
@@ -35,35 +31,8 @@ On the high level, the following needs to be implemented:
   2. Capture the email sent by the real client and save to disk, without altering the content.
   3. Additionally, comprise any client authentication.
   4. Termination.
+  5. Extend the server to support multiple connections from clients.
 
-The assignment has four tasks that you will need to implement and thoroughly test. You will be provided a test suite to assist in developing your solutions.
-
-The four tasks are:
-
-1. Implement a client that supports the `SMTP-CRAM` protocol.
-2. Implement a server that supports the `SMTP-CRAM` protocol.
-3. Implement an eavesdropper (middle-man attacker) that secretly relays the communications between the client and the server that supports the `SMTP-CRAM` protocol.
-4. Write a report in your own words on the `SMTP-CRAM` protocol.
-
-A bonus task can be implemented if the Task 1, 2 and 3 are completed and verified by public testcases:
-
-- Extend the server to support multiple connections from clients.
-
-Please read the whole specification to better understand these tasks.
-
-## \*Background Story
-
-\* Note: It is totally OK to skip reading this part if you just want to do your assignment. Trust me, I am 100% honest. ~~Or maybe I am not?~~
-
-\*\* Actually after reading this section, the whole assignment should make more sense.
-
-You are a rookie Webrunner (hacker) that interns at a game company, ***Asaraka*** in the Sun City. (This should not be confused with ***Arasaka***.)
-
-Your first job is to do a case study on an insecure ancient email protocol over `socket` called `SMTP-CRAM`. Your boss David told you that `SMTP-CRAM` does not provide server authentication and cannot be resistant to man-in-the-middle attack. But as a rookie, you don't know what David was talking about, and decided to do some research and work on it on your own. It is your first job, you'd better not mess it up, you think to yourself.
-
-`SMTP-CRAM` is so ancient that you cannot even find a concrete implementation of the protocol. You decide to implement it first and that includes a `SMTP-CRAM` server and a `SMTP-CRAM` client.
-
-After that, you want to build an actual middle man attacker server to break the protocol. Hopefully, you will impress your boss and get a raise. ***Hopefully***. Well, it's the Sun City, who knows what will happen next. Anyway, your future awaits, you'd better start now!
 
 ## Glossary
 
@@ -85,7 +54,7 @@ Note that a large proportion of this specification is adapted based on a collect
 
 We acknowledge this fact and we pay tribute to the past and the present of the [Internet Engineering Task Force](https://www.ietf.org/), the [History of the Internet](https://en.wikipedia.org/wiki/History_of_the_Internet) and all efforts towards creating these protocol standards.
 
-However, it is strongly **NOT** recommended to directly follow the referred documents above, because the assignment is neither a subset nor a superset of the collection. As a simplification, some details in RFC have been omitted intentionally; and to adapt it into an assignment, other details have been added.
+As a simplification, some details in RFC have been omitted intentionally.
 
 ### Request and Response
 
@@ -93,7 +62,7 @@ Data is exchanged through a sequence of request-response messages which are exch
 
 ### ABNF (Augmented Backus–Naur form)
 
-ABNF is a popular formal method of describing communication syntax. It is used in this assignment to help us formally define syntax of `SMTP-CRAM` Request and Response. More information and examples can be found on the Internet. E.g.:
+ABNF is a popular formal method of describing communication syntax. It is used in this program to help us formally define syntax of `SMTP-CRAM` Request and Response. More information and examples can be found on the Internet. E.g.:
 
 - [Wikipedia](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)
 - [RFC5234](https://www.rfc-editor.org/rfc/rfc5234)
@@ -142,7 +111,7 @@ This is straightforward in many circumstances; for example, an attacker within t
 
 Most cryptographic protocols include some form of endpoint authentication specifically to prevent MitM attacks. For example, `TLS` can authenticate one or both parties using a mutually trusted certificate authority. However, `SMTP-CRAM` is a limited protocol that cannot really prevent MitM attacks.
 
-In Task 3, you are asked to implement an eavesdropper program that can perform active eavesdropping attack under the `SMTP-CRAM` protocol. In other words, if the attacker program is provided enough information on the victims (a `SMTP-CRAM` client and a `SMTP-CRAM` server), it can then make independent connections with the victims and relays messages between them to make them believe they are talking directly to each other over a private connection, when in fact the entire conversation is controlled by the attacker. The attacker is able to intercept all relevant messages passing between the two victims and inject new ones.
+We implement an eavesdropper program that can perform active eavesdropping attack under the `SMTP-CRAM` protocol. In other words, if the attacker program is provided enough information on the victims (a `SMTP-CRAM` client and a `SMTP-CRAM` server), it can then make independent connections with the victims and relays messages between them to make them believe they are talking directly to each other over a private connection, when in fact the entire conversation is controlled by the attacker. The attacker is able to intercept all relevant messages passing between the two victims and inject new ones.
 
 For testing, we enforce the real client to connect to the attacker, and also the real server to accept the attacker as a client in good faith.
 
@@ -171,8 +140,6 @@ The meaningful states in this assignment can be found in later section.
 
 ### Personal Credentials
 
-In this assignment, every student is assigned a pair of **confidential**, unique and random identifier and secret. You can find them in the Ed slide [Personal Credentials](https://edstem.org/au/courses/8961/lessons/26522/slides/196175). Specifically, you should click "Mark" to view the return messages, and they should be of the form:
-
 ```default
 Your Personal ID is:
 ABCDEF
@@ -180,17 +147,7 @@ Your Personal Secret is:
 ................................
 ```
 
-This should be used when you build the client and server program, because the `AUTH` command will need them as the user name and the shared secret.
-
-Note that you shall ALWAYS use your own personal credentials and NEVER share your credentials with other students.
-An impersonated use of valid credentials must indicate an exchange of confidential information or the credential generation or exchanging process is compromised.
-Staff will investigate into any impersonation incidents, and if the exchange of credentials between individuals is confirmed, it will result in VERY harsh deduction on your assignment.
-
-This will be treated very seriously. In any confirmed breach incident, the individual who intentionally shares the credentials and who uses the credentials of others will face the same level of penalty. Please make sure you do not let others know your the credentials easily.
-
-The same level of penalty will apply to those motivated individuals who attempt to crack the generating process and finally achieve their goal. Any attack in good faith is also forbidden. It is suggested that you shouldn't attempt to do so.
-
-In short, there is no gain in sharing your secret, so please keep it secret. Thus, there is no gain in knowing others' secrets, so please don't try.
+The `AUTH` command will need them as the user name and the shared secret.
 
 ### Convention
 
@@ -320,11 +277,8 @@ Note, the server needs to be robust, meaning not only it can handle requests fro
 
 If the server can handle multiple connections from clients simultaneously, it needs to spawn multiple child processes to handle each client connection.
 
-In this assignment specifically, there are a few additional requirements on implementation are needed:
-
-1. `fork` implementation. Multi-threading implementation is not allowed. Only multi-processing implementation by `os.fork()` is allowed. Wrong implementation will result in manual deduction.
-2. Instant `fork` after connection establishment. It is required that once the server `main` process (the process that is launched manually by the user) accepts a client connection, it should `fork` immediately to a server `child` process.
-   In other words, the main process should only wait for new client connections and accept them. It will let its children handle the real communication in each server-client session.
+1. `fork` implementation by `os.fork()`
+2. Instant `fork` after connection establishment. It is required that once the server `main` process (the process that is launched manually by the user) accepts a client connection, it should `fork` immediately to a server `child` process. In other words, the main process should only wait for new client connections and accept them. It will let its children handle the real communication in each server-client session.
 3. Prefix with `[PID][ORDER]`. The bahaviour of logging and saving need a minor change. This helps the user to differentiate between the server `child` processes.
    Instead of using the simple convention `C: ` and `S: `, the `child` processes should add a prefix `[PID][ORDER]`.
    When saving an email transaction file, also add a prefix `[PID][ORDER]` to the file name.
@@ -345,8 +299,6 @@ For example, if the server has received two connections from two clients, it may
 ```
 
 Where `[110][01]` means the server `main` process spawned the first (`[01]`) `child` process to handle a client, and the `[01]` `child` has process ID `110`. Similarily, we know `main` forked to `[02]` `child` with PID `115`. The `order` should never decrement and increment by 1 when a new connection is established. It won't decrement when a server `child` process terminates.
-
-Recall the `fork` and `exec` practices in Week 3 lab, the order of the logs among `child` processes might not be completely determinastic, but the order has to deterministic for a specific `child` process.
 
 ### Client
 
@@ -1286,132 +1238,8 @@ The state diagram for `AUTH` exceptional operations is given below. This diagram
 
 ![auth-exceptional](AUTH-EXCEPTION.svg)
 
-## Self-testing
-
-You are expected to write a number of test cases for server program ONLY. You are expected to test as many as possible execution paths of your code. Although you're asked to build the client already, implementing a server that can only handle your own client is not enough. The error conditions for the server are well documented in this specification, the server needs to robust and handle all the errors in the expected way.
-
-We will provide you with some test cases, but these do not test all the functionality described in the assignment. It is important that you thoroughly test your code by writing your own end-to-end (input/output) tests.
-
-Unit tests are not required and not assessable.
-
-For end-to-end testing, the input is the data (bytes encoded in ASCII, so plaintext) to be sent to the server, and the expected output is the log (`stdout`) of the server.
-
-You must place all your end-to-end test cases in the `e2e_tests/` directory. Ensure that each pair of test cases must have an `<name>.in` input file and an `<name>.out` output file. Your own tests will not be marked if this naming convention is not followed. We recommend that the names of your test cases are descriptive so that the reader can easily know what each case is testing. E.g., `EHLO_01.in`, `AUTH_02.in`.
-
-[`Coverage.py`](https://github.com/nedbat/coveragepy) will be used to generate the coverage of your own tests and the coverage rate will determine some of the testing marks. Unix tools like `netcat` and `telnet` can help test your program.
-
 ## Implementation
 
-The assignment is to be implemented in Python. A set of scaffold files will be provided. You are expected to write legible code with good style, E.g.,[PEP 8](https://peps.python.org/pep-0008/).
-
-Here is a list of initially approved modules. You are allowed to use the available version of them on Ed.
-
-```default
-dataclass,
-typing,enum,
-os,sys,pathlib,
-signal,
-re,regex,
-date,time,datetime,
-socket,select,fcntl,
-base64,hmac,hashlib,secrets,binascii,
-random
-```
-
-Here is a list of blacklisted modules that must not be allowed even upon request.
-
-```default
-configparser,
-email,smtplib,smtpd,aiosmtpd,
-threading,multiprocessing,subprocess
-```
-
-You are **NOT** allowed to import any Python modules that are not in the list of approved modules. You are free to use all built-in functions of Python. You are **NOT** allowed to include third-party Unix program directly (E.g., `os.system('netcat')` or equivalence) in your program.
-
-If you want to use an additional module which will not trivialize the assignment, please ask on Ed. The approved library list may be extended. Related announcement should be posted accordingly.
-
-May you have doubts on whether certain actions conducted in your solution are allowed or not, please ask on Ed.
-
-You should **NOT** preserve any data in-progress temporarily on disk, but in the memory (this does not include the email files servers which will be saved on disk).
-
-Please be mindful: breaching the above restrictions will result in harsh deduction for the entire assignment.
-
-## Submitting your code
-
-An Ed Lesson workspace will be available for you to test and submit your code. Public test cases will be released up to **Week 12, Thursday, October 26th**. Additionally, there could be a set of unreleased test cases which will be run against your code after the due date.
-
-You will need to use `git` to submit your code. To learn what `git` is and how to setup `git` (and SSH key) properly, please refer to Lecture 4.
-
-## Where to start
-
-Note: the following numbering does not necessarily suggest the ordering that you should consider them.
-
-1. Review the lab content for Week 8 and 10, and Homework 5 Task "Python Echo Server". Do research on `socket`:
-   - [socket documentation](https://docs.python.org/3/library/socket.html).
-   - [Socket Programming HOWTO](https://docs.python.org/3/howto/sockets.html).
-
-    Find good TCP `socket` programs on the Internet (not only `StackOverflow`) and learn from the exemplars.
-    Think about what makes `socket` program harder to debug, and first build your own debugging pipeline. E.g., Develop a pair of minimal viable client and server that can log all transaction chronologically. Eventually you will need it for your assignment.
-2. Write a parser to verify the email transaction text format.
-3. First the client, then the server, finally the eavesdropper. The client is easier to implement than the server. The behaviour of the client is less complex, whereas the server needs to be robust and handle any client - not limited to the one you develop. It would be almost impossible to have a working eavesdropper if the client and the server are not finished.
-4. Consider what states and buffers mean on the server side. Why they are important? How can client behaviours affect the data structure that the server holds? How can you code this stateful server? E.g., define your own states and manage them.
-5. The forbidden libraries involve existing `SMTP` implementations available in Python. You cannot use them or copy their source code directly, but for certain design, you may refer to them. E.g., state management.
-
-## Marking Criteria
-
-The assignment will be marked with an automatic testing system on Ed. A mark will be given based on
-
-- The tests passed for Task 1, 2 and 3 (16%). However, manual deduction may be applied if specific implementation requirements are not followed.
-  - Task 1 (6%).
-  - Task 2 (6%).
-    - Use `CSPRNG` to generate challenge.
-  - Task 3 (4%).
-    - `fork` implementation.
-- Self-testing (2%).
-  - You are expected to write your own tests and submit them with your code, and a mark will be given based on coverage and manual inspection of your tests.
-  - Your test cases must cover as many as possible execution paths and designed to test specific features of the server.
-- A manual mark will be given to your report in Task 4 (2%).
-
-A bonus mark (2%) may be given after completion of the first three tasks. As a condition, you will NOT be able to receive bonus marks unless all public test cases in Task 1, 2 and 3 have been completed. For requirements, please refer to the "Multi-process server" section. The mark will be awarded based on both passed automatic tests and a manual inspection.
-
-There will be public test cases made available for you to test against, but there will also be extra non-public tests used for marking. Success with the public tests doesn't guarantee your program will pass the private tests.
-
-### Task 4
-
-Write a report **IN YOUR OWN WORDS**:
-
-- Define authentication, authorization and encryption using real world examples. From 150 words to the maximum of 200 words.
-- Discuss what the `SMTP-CRAM` protocol can and cannot offers in terms of the above three concepts. If it can support one aspect, briefly describe the mechanism; if it fails to support one aspect, give a brief counterexample to support. From 150 words to the maximum of 200 words.
-- Cite all references clearly. No citation format requirement.
-
-## Friendly note and important dates
-
-Sometimes we find typos or other errors in specifications. Sometimes the specification could be clearer. Students and tutors often make great suggestions for improving the specification. Therefore, this assignment specification may be clarified up to **Week 12, Thursday, October 26th**. No major changes will be made. Revised versions will be clearly marked, and the most recent version announced to the class via Ed Discussions.
-
-Before making a post on Ed, please [search the keywords](https://edstem.org/au/courses/8961/discussion/1035602) to find if there is any identical or related post. Duplication of identical post is not encouraged.
-
-When making a post, we encourage you to make the post "public" if it is not personal or confidential. Everyone can benefit from a "public" post however not a "private" one. You can make an "anonymous public" post if you don't want to reveal your identity.
-
-<div style="page-break-after: always; break-after: page;"></div>
-
-## Warning
-
-Any attempts to share your confidential personal credentials will be investigated. If the indentional act of exchanging credentials is confimred, it will result in an immediate zero for the entire assignment. This applies to any parties that participate in the exchange intentionally.
-
-Any attempts to deceive the automatic marking system will result in an immediate zero for the entire assignment.
-
-Negative marks can be assigned if you do not properly follow the assignment description, or your code is unnecessarily or deliberately obfuscated.
-
-## Academic Declaration
-
-By submitting this assignment, you declare the following:
-
-*I declare that I have read and understood the University of Sydney Student Plagiarism: Coursework Policy and Procedure, and except where specifically acknowledged, the work contained in this assignment/project is my own work, and has not been copied from other sources or been previously submitted for award or assessment.*
-
-*I understand that failure to comply with the Student Plagiarism: Coursework Policy and Procedure can lead to severe penalties as outlined under Chapter 8 of the University of Sydney By-Law 1999 (as amended). These penalties may be imposed in cases where any significant portion of my submitted work has been copied without proper acknowledgement from other sources, including published works, the Internet, existing programs, the work of other students, or work previously submitted for other awards or assessments.*
-
-*I realise that I may be asked to identify those portions of the work contributed by me and required to demonstrate my knowledge of the relevant material by answering oral questions or by undertaking supplementary work, either written or in the laboratory, in order to arrive at the final assessment mark.*
-
-*I acknowledge that the School of Computer Science, in assessing this assignment, may reproduce it entirely, may provide a copy to another member of faculty, and/or communicate a copy of this assignment to a plagiarism checking service or in-house computer program, and that a copy of the assignment may be maintained by the service or the School of Computer Science for the purpose of future plagiarism checking.*
+This program does **NOT** preserve any data in-progress temporarily on disk, but in the memory (this does not include the email files servers which will be saved on disk).
 
 <div style="page-break-after: always; break-after: page;"></div>
