@@ -274,8 +274,6 @@ Note, the server needs to be robust, meaning not only it can handle requests fro
 
 ### Multi-process server
 
-\* This section is related to the bonus task.
-
 If the server can handle multiple connections from clients simultaneously, it needs to spawn multiple child processes to handle each client connection.
 
 1. `fork` implementation by `os.fork()`
